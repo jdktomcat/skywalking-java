@@ -47,7 +47,7 @@ public class HttpclientRequestHeadersInterceptor implements InstanceMethodsAroun
                               final Method method,
                               final Object[] allArguments,
                               final Class<?>[] argumentsTypes,
-                              final Object ret) throws Throwable {
+                              final Object ret) {
         return ret;
     }
 

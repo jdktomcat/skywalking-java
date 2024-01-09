@@ -20,7 +20,7 @@ package org.apache.skywalking.apm.agent.core.context;
 
 public class SW8CarrierItem extends CarrierItem {
     public static final String HEADER_NAME = "sw8";
-    private ContextCarrier carrier;
+    private final ContextCarrier carrier;
 
     public SW8CarrierItem(ContextCarrier carrier, CarrierItem next) {
         super(HEADER_NAME, carrier.serialize(ContextCarrier.HeaderVersion.v3), next);

@@ -70,16 +70,13 @@ public class HttpClientRequestInterceptor implements InstanceMethodsAroundInterc
         ContextManager.stopSpan(abstractSpan);
 
         Function<? super HttpClientRequest, ? extends Publisher<Void>> handler = (Function<? super HttpClientRequest, ? extends Publisher<Void>>) allArguments[2];
-        allArguments[2] = new Function<HttpClientRequest, Publisher<Void>>() {
-            @Override
-            public Publisher<Void> apply(final HttpClientRequest httpClientRequest) {
-                //
-                CarrierItem next = contextCarrier.items();
-                if (httpClientRequest instanceof EnhancedInstance) {
-                    ((EnhancedInstance) httpClientRequest).setSkyWalkingDynamicField(next);
-                }
-                return handler.apply(httpClientRequest);
+        allArguments[2] = (Function<HttpClientRequest, Publisher<Void>>) httpClientRequest -> {
+            //
+            CarrierItem next = contextCarrier.items();
+            if (httpClientRequest instanceof EnhancedInstance) {
+                ((EnhancedInstance) httpClientRequest).setSkyWalkingDynamicField(next);
             }
+            return handler.apply(httpClientRequest);
         };
 
         context.setContext(new EnhanceCacheObject(span, abstractSpan));
@@ -94,12 +91,7 @@ public class HttpClientRequestInterceptor implements InstanceMethodsAroundInterc
                               MethodInvocationContext context) {
         EnhanceCacheObject enhanceCacheObject = (EnhanceCacheObject) context.getContext();
         Mono<HttpClientResponse> responseMono = (Mono<HttpClientResponse>) ret;
-        return responseMono.doAfterSuccessOrError(new BiConsumer<HttpClientResponse, Throwable>() {
-            @Override
-            public void accept(final HttpClientResponse httpClientResponse, final Throwable throwable) {
-                doAfterSuccessOrError(httpClientResponse, throwable, enhanceCacheObject);
-            }
-        });
+        return responseMono.doAfterSuccessOrError((httpClientResponse, throwable) -> doAfterSuccessOrError(httpClientResponse, throwable, enhanceCacheObject));
     }
 
     void doAfterSuccessOrError(HttpClientResponse httpClientResponse, Throwable throwable, EnhanceCacheObject enhanceCacheObject) {

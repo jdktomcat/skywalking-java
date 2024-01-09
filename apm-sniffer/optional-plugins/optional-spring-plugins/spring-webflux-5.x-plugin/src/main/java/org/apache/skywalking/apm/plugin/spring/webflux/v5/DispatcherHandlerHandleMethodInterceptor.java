@@ -48,22 +48,18 @@ public class DispatcherHandlerHandleMethodInterceptor implements InstanceMethods
     public void beforeMethod(EnhancedInstance objInst, Method method, Object[] allArguments, Class<?>[] argumentsTypes,
                              MethodInterceptResult result) throws Throwable {
         EnhancedInstance instance = getInstance(allArguments[0]);
-
         ServerWebExchange exchange = (ServerWebExchange) allArguments[0];
-
         ContextCarrier carrier = new ContextCarrier();
         CarrierItem next = carrier.items();
         HttpHeaders headers = exchange.getRequest().getHeaders();
         while (next.hasNext()) {
             next = next.next();
             List<String> header = headers.get(next.getHeadKey());
-            if (header != null && header.size() > 0) {
+            if (header != null && !header.isEmpty()) {
                 next.setHeadValue(header.get(0));
             }
         }
-
         AbstractSpan span = ContextManager.createEntrySpan(exchange.getRequest().getURI().getPath(), carrier);
-
         if (instance != null && instance.getSkyWalkingDynamicField() != null) {
             ContextManager.continued((ContextSnapshot) instance.getSkyWalkingDynamicField());
         }
@@ -71,10 +67,10 @@ public class DispatcherHandlerHandleMethodInterceptor implements InstanceMethods
         SpanLayer.asHttp(span);
         Tags.URL.set(span, exchange.getRequest().getURI().toString());
         HTTP.METHOD.set(span, exchange.getRequest().getMethodValue());
+        assert instance != null;
         instance.setSkyWalkingDynamicField(ContextManager.capture());
         span.prepareForAsync();
         ContextManager.stopSpan(span);
-
         exchange.getAttributes().put("SKYWALKING_SPAN", span);
     }
 
