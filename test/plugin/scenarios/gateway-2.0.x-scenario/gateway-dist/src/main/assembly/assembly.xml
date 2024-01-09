@@ -23,24 +23,19 @@
     <formats>
         <format>zip</format>
     </formats>
-
     <fileSets>
         <fileSet>
             <directory>./bin</directory>
-            <fileMode>0775</fileMode>
         </fileSet>
     </fileSets>
-
     <files>
         <file>
             <source>../gateway-projectA-scenario/target/gateway-projectA-scenario.jar</source>
             <outputDirectory>./libs</outputDirectory>
-            <fileMode>0775</fileMode>
         </file>
         <file>
             <source>../gateway-projectB-scenario/target/gateway-projectB-scenario.jar</source>
             <outputDirectory>./libs</outputDirectory>
-            <fileMode>0775</fileMode>
         </file>
     </files>
 </assembly>
